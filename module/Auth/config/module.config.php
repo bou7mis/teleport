@@ -52,7 +52,9 @@ return [
         'factories' => [
             'auth.handler' => function ($sm) {
                     $handler = new \Auth\Service\AuthHandler;
-                    $handler->setAdapter($sm->get('auth.adapter'));
+                    $adapter = $sm->get('auth.adapter');
+                    $adapter->setServiceLocator($sm);
+                    $handler->setAdapter($adapter);
                     return $handler;
                 },
         ],
@@ -64,6 +66,13 @@ return [
     'view_manager' => [
         'template_path_stack' => [
             __DIR__ . '/../view'
+        ]
+    ],
+    'view_helper_config' => [
+        'flashmessenger' => [
+            'message_open_format' => '<div%s><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><ul><li>',
+            'message_close_string' => '</li></ul></div>',
+            'message_separator_string' => '</li><li>'
         ]
     ]
 ];

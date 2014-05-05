@@ -8,15 +8,31 @@
 
 namespace Auth\Service;
 
-
 use Zend\Authentication\Adapter\AdapterInterface;
+use Zend\Authentication\Result;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-class MemberAuthAdapter implements AdapterInterface
+/**
+ * Class MemberAuthAdapter
+ * @package Auth\Service
+ */
+class MemberAuthAdapter implements AdapterInterface, ServiceLocatorAwareInterface
 {
-
+    /**
+     * @var
+     */
     protected $identity;
 
+    /**
+     * @var
+     */
     protected $credential;
+
+    /**
+     * @var ServiceLocatorInterface
+     */
+    protected $sl;
 
     /**
      * Performs an authentication attempt
@@ -28,20 +44,27 @@ class MemberAuthAdapter implements AdapterInterface
     {
         $login = $this->getIdentity();
         $password = $this->getCredential();
+        $member = null;
+        $code = Result::FAILURE;
+        $messages = [];
 
-        if ($login && $login == $password) {
-            $code = Result::SUCCESS;
-            $messages = [];
-        } else {
-            $code = Result::FAILURE;
-            if ($login) {
-                $messages = ['Wrong user and/or password'];
+        if ($login) {
+            $em = $this->sl->get('Doctrine\ORM\EntityManager');
+            $member = $em->getRepository('Application\Entity\Member')->findOneBy(['email' => $login]);
+
+            if (!is_null($member) && $member->getPassword() == md5($password)) {
+                $code = Result::SUCCESS;
+                $messages = [];
+                $member->setLastLoggedIn(new \DateTime());
+                $em->persist($member);
             } else {
-                $messages = ['No login provided'];
+                $messages = ['Wrong login/password combination'];
             }
+        } else {
+            $messages = ['No login provided'];
         }
 
-        return new Result($code, $login, $messages);
+        return new Result($code, $member, $messages);
     }
 
     /**
@@ -74,5 +97,25 @@ class MemberAuthAdapter implements AdapterInterface
     public function getIdentity()
     {
         return $this->identity;
+    }
+
+    /**
+     * Set service locator
+     *
+     * @param ServiceLocatorInterface $serviceLocator
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->sl = $serviceLocator;
+    }
+
+    /**
+     * Get service locator
+     *
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->sl;
     }
 }

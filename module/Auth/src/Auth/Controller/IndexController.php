@@ -8,11 +8,20 @@
 
 namespace Auth\Controller;
 
+use Zend\Debug\Debug;
 use Zend\Http\Response;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
 
+/**
+ * Class IndexController
+ * @package Auth\Controller
+ */
 class IndexController extends AbstractActionController
 {
+    /**
+     * @return array|Response
+     */
     public function loginAction()
     {
         $data = $this->prg();

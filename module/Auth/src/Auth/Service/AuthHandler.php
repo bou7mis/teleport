@@ -8,21 +8,37 @@
 
 namespace Auth\Service;
 
-
 use Zend\Authentication\Adapter\AdapterInterface;
 use Zend\Authentication\AuthenticationService;
 
+/**
+ * Class AuthHandler
+ * @package Auth\Service
+ */
 class AuthHandler extends AuthenticationService
 {
+    /**
+     * @var
+     */
     protected $adapter;
 
+    /**
+     * @var
+     */
     protected $login;
 
+    /**
+     * @var
+     */
     protected $password;
 
+    /**
+     * @param AdapterInterface $adapter
+     * @return \Zend\Authentication\Result
+     */
     public function authenticate(AdapterInterface $adapter = null)
     {
-        if(is_null($adapter)) {
+        if (is_null($adapter)) {
             $adapter = $this->getAdapter();
         }
 
@@ -31,9 +47,19 @@ class AuthHandler extends AuthenticationService
 
         $result = parent::authenticate($adapter);
 
-        if($result->isValid()) {
-            var_dump($result);
+        if ($result->isValid()) {
+            $this->getStorage()->write($result->getIdentity());
         }
+
+        return $result;
+    }
+
+    /**
+     * @param AdapterInterface $adapter
+     */
+    public function setAdapter($adapter)
+    {
+        $this->adapter = $adapter;
     }
 
     /**
@@ -45,11 +71,27 @@ class AuthHandler extends AuthenticationService
     }
 
     /**
+     * @param mixed $login
+     */
+    public function setLogin($login)
+    {
+        $this->login = $login;
+    }
+
+    /**
      * @return mixed
      */
     public function getLogin()
     {
         return $this->login;
+    }
+
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
     }
 
     /**
@@ -59,4 +101,4 @@ class AuthHandler extends AuthenticationService
     {
         return $this->password;
     }
-} 
+}
