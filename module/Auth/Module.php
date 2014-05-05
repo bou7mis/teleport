@@ -1,5 +1,7 @@
 <?php
 
+Namespace Auth;
+
 /**
  * Created by PhpStorm.
  * User: ahmed

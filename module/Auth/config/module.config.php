@@ -21,7 +21,21 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
-
+                    'login' => [
+                        'type' => 'Literal',
+                        'options' => [
+                            'route' => '/login'
+                        ]
+                    ],
+                    'logout' => [
+                        'type' => 'Literal',
+                        'options' => [
+                            'route' => '/logout',
+                            'defaults' => [
+                                'action' => 'logout'
+                            ]
+                        ]
+                    ]
                 ]
             ]
         ]
@@ -33,17 +47,19 @@ return [
     ],
     'service_manager' => [
         'invokables' => [
-
+            'authentication.adapter.member' => 'Auth\Service\MemberAuthAdapter'
         ],
         'factories' => [
-
+            'auth.handler' => function ($sm) {
+                    $handler = new \Auth\Service\AuthHandler;
+                    $handler->setAdapter($sm->get('auth.adapter'));
+                    return $handler;
+                },
         ],
         'aliases' => [
-
+            'auth.adapter' => 'authentication.adapter.member',
+            'Zend\Authentication\AuthenticationService' => 'auth.handler'
         ]
-    ],
-    'form_elements' => [
-
     ],
     'view_manager' => [
         'template_path_stack' => [

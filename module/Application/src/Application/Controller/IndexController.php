@@ -9,6 +9,7 @@
 
 namespace Application\Controller;
 
+use Application\Entity\Member;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -16,6 +17,13 @@ class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
-        return new ViewModel();
+//        return new ViewModel();
+        $entityManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $member = new Member();
+        $member->setFirstName('Ahmed')->setLastName('ZERZERI')->setEmail('ahmed.zerzeri@gmail.com')
+            ->setPassword(md5('123456'))->setLastLoggedIn(new \DateTime());
+        $entityManager->persist($member);
+        $entityManager->flush();
+        die(var_dump($member->getId()));
     }
 }
