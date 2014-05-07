@@ -26,10 +26,6 @@ class IndexController extends AbstractActionController
     {
         $data = $this->prg();
 
-        if ($data instanceof Response) {
-            return $data;
-        }
-
         if (is_array($data)) {
             $authHandler = $this->getServiceLocator()->get('auth.handler');
 
