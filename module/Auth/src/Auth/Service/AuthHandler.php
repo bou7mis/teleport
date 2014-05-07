@@ -18,17 +18,17 @@ use Zend\Authentication\AuthenticationService;
 class AuthHandler extends AuthenticationService
 {
     /**
-     * @var
+     * @var AdapterInterface
      */
     protected $adapter;
 
     /**
-     * @var
+     * @var string
      */
     protected $login;
 
     /**
-     * @var
+     * @var string
      */
     protected $password;
 
